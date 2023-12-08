@@ -19,11 +19,6 @@ def load_words(filename):
 
 # 次の単語を表示する関数
 def next_word(label, words, index, mastery_levels):
-    # 習熟度が最大でない単語があるか確認
-    if all(level == 2 for level in mastery_levels.values()):
-        label.config(text="全ての単語の習熟度が最大です")
-        return
-
     # 習熟度が最大でない単語を探す
     original_index = index[0]
     while True:
@@ -33,7 +28,7 @@ def next_word(label, words, index, mastery_levels):
 
         # 全ての単語をチェックしたか確認
         if index[0] == original_index:
-            label.config(text="未習得の単語がありません")
+            label.config(text="全ての単語が習得済みです")
             break
 
         current_word = words[index[0]][0]
@@ -55,16 +50,18 @@ def main():
 
     words = load_words("words.csv") # 単語リストの読み込み
     current_word_index = [0]  # 現在の単語のインデックスを追跡
-    mastery_levels = {word[0]: 2 for word in words}  # 各単語の習熟度を初期化
+    mastery_levels = {word[0]: 0 for word in words}  # 各単語の習熟度を初期化
     # 例: 0 = 未学習, 1 = 学習中, 2 = 習得済み
     
-    # 単語を表示するラベル
-    if not words:
-        # 単語リストが読み込めない場合
-        word_label = tk.Label(root, text="単語リストを読み込めませんでした", font=("Helvetica", 16))
+    # 最初に単語を表示するラベル
+    if all(level == 2 for level in mastery_levels.values()):
+        initial_text = "全ての単語の習熟度が最大です"
+    elif not words:
+        initial_text = "単語リストを読み込めませんでした"
     else:
-        # 単語リストが読み込めた場合
-        word_label = tk.Label(root, text=words[current_word_index[0]][0], font=("Helvetica", 16))
+        initial_text = words[current_word_index[0]][0]
+    
+    word_label = tk.Label(root, text=initial_text, font=("Helvetica", 16))
     word_label.pack(pady=20)
 
     # 次の単語に進むボタン
