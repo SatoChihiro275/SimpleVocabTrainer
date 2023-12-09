@@ -26,13 +26,19 @@ def load_words(filename):
 
 ############ モード選択画面の表示 ############
 def start_mode_selection(root, words, mastery_levels):
+    # 既存のウィジェットをクリア
+    for widget in root.winfo_children():
+        widget.destroy()
+
+    # モード選択ボタンのフレーム
     selection_frame = tk.Frame(root)
-    selection_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    selection_frame.pack(expand=True)
 
+    # 単語暗記モード選択ボタン
     tk.Button(selection_frame, text="単語暗記モード", height=3, width=20, command=lambda: start_learning_mode(root, words, mastery_levels)).pack(pady=10)
-    tk.Button(selection_frame, text="単語テストモード", height=3, width=20, command=lambda: start_test_mode(root, words, mastery_levels)).pack(pady=10)
 
-    selection_frame.pack()
+    # 単語テストモード選択ボタン
+    tk.Button(selection_frame, text="単語テストモード", height=3, width=20, command=lambda: start_test_mode(root, words, mastery_levels)).pack(pady=10)
 
 ############ 単語暗記モードを開始する関数 ############
 def start_learning_mode(root, words, mastery_levels):
@@ -61,6 +67,10 @@ def start_learning_mode(root, words, mastery_levels):
     # 次の単語を表示するボタン
     next_word_button = tk.Button(root, text="次の単語", command=lambda: display_next_word(words, mastery_levels, word_label, meaning_label))
     next_word_button.pack(pady=10)
+
+    # モード選択に戻るボタン
+    back_to_selection_button = tk.Button(root, text="モード選択に戻る", command=lambda: start_mode_selection(root, words, mastery_levels))
+    back_to_selection_button.pack(side=tk.BOTTOM, pady=10)
 
     # 最初に全ての単語を表示
     display_words(words, mastery_levels, word_label, meaning_label, "全て")
