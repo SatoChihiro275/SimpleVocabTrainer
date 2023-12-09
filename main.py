@@ -25,24 +25,27 @@ def load_words(filename):
 
 ### 指定されたラベルに次の単語を表示し、グラフを非表示にする関数 ###
 def next_word(label, words, index, mastery_levels, frame):
-    # 習熟度が最大でない単語を探す
+    # 現在のインデックスを保持
     original_index = index[0]
-    while True:
-        index[0] += 1
-        if index[0] >= len(words):
-            index[0] = 0
+    found_word = False  # 習得済みでない単語が見つかったかどうかのフラグ
 
-        # 全ての単語をチェックしたか確認
-        if index[0] == original_index:
-            label.config(text="全ての単語が習得済みです")
-            break
-
+    # 単語リスト内をループ
+    for _ in range(len(words)):
+        # インデックスを1つ進める（リストの長さで割った余りを使用）
+        index[0] = (index[0] + 1) % len(words)
         current_word = words[index[0]][0]
-        if mastery_levels[current_word] < 2:  # 習得済みでない単語を選択
-            label.config(text=current_word)
+
+        # 習熟度が最大でない単語が見つかった場合
+        if mastery_levels[current_word] < 2:
+            label.config(text=current_word)  # 単語を表示
+            found_word = True
             break
-    
-    # グラフを非表示にする
+
+    # 習得済みでない単語が見つからなかった場合
+    if not found_word:
+        label.config(text="全ての単語が習得済みです")
+
+    # グラフを非表示にする処理
     for widget in frame.winfo_children():
         widget.destroy()
     frame.pack_forget()
