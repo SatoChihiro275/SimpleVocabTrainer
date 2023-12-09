@@ -1,5 +1,11 @@
 import csv
 import tkinter as tk
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+# 日本語フォントの設定
+mpl.rcParams['font.family'] = 'Meiryo'
 
 ########################################################
 
@@ -16,6 +22,12 @@ def load_words(filename):
     except Exception as e:
         print(f"ファイルの読み込み中にエラーが発生しました: {e}")
     return words
+
+# 習熟度を更新して次の単語を表示する関数
+def update_and_next(word_label, words, index, mastery_levels, level):
+    word = word_label.cget("text")
+    mastery_levels[word] = level
+    next_word(word_label, words, index, mastery_levels)
 
 # 次の単語を表示する関数
 def next_word(label, words, index, mastery_levels):
@@ -36,9 +48,21 @@ def next_word(label, words, index, mastery_levels):
             label.config(text=current_word)
             break
 
-# 習熟度を更新する関数
-def update_mastery(word, mastery_levels, level):
-    mastery_levels[word] = level
+# 学習進捗を表示する関数
+def show_progress(mastery_levels, root):
+    # 習熟度レベルごとの単語数を集計
+    counts = [0, 0, 0]  # 0: 未学習, 1: 学習中, 2: 習得済み
+    for level in mastery_levels.values():
+        counts[level] += 1
+
+    # グラフの作成
+    fig, ax = plt.subplots()
+    ax.bar(["未学習", "学習中", "習得済み"], counts, color=['red', 'yellow', 'green'])
+
+    # Tkinterウィンドウにグラフを埋め込む
+    canvas = FigureCanvasTkAgg(fig, master=root)  # rootはTkinterのメインウィンドウ
+    canvas.draw()
+    canvas.get_tk_widget().pack()
 
 ########################################################
 
@@ -65,8 +89,19 @@ def main():
     word_label.pack(pady=20)
 
     # 次の単語に進むボタン
-    next_button = tk.Button(root, text="次の単語", command=lambda: next_word(word_label, words, current_word_index, mastery_levels))
-    next_button.pack()
+    # next_button = tk.Button(root, text="次の単語", command=lambda: next_word(word_label, words, current_word_index, mastery_levels))
+    # next_button.pack()
+
+    # 習熟度更新ボタン
+    btn_frame = tk.Frame(root)
+    btn_frame.pack(pady=10)
+    tk.Button(btn_frame, text="未学習", command=lambda: update_and_next(word_label, words, current_word_index, mastery_levels, 0)).pack(side=tk.LEFT)
+    tk.Button(btn_frame, text="学習中", command=lambda: update_and_next(word_label, words, current_word_index, mastery_levels, 1)).pack(side=tk.LEFT)
+    tk.Button(btn_frame, text="習得済み", command=lambda: update_and_next(word_label, words, current_word_index, mastery_levels, 2)).pack(side=tk.LEFT)
+
+    # 進捗表示ボタン
+    progress_button = tk.Button(root, text="進捗を表示", command=lambda: show_progress(mastery_levels, root))
+    progress_button.pack()
 
     root.mainloop()
 
