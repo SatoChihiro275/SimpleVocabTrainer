@@ -11,7 +11,8 @@ mpl.rcParams['font.family'] = 'Meiryo'
 current_category = "全て"
 current_index = 0
 
-### CSVファイルから単語リストと習熟度を読み込む関数 ###
+########## ユーティリティ関数 ##########
+# CSVファイルから単語リストと習熟度を読み込む関数
 def load_words(filename):
     words = {}
     try:
@@ -26,7 +27,7 @@ def load_words(filename):
         print(f"ファイルの読み込み中にエラーが発生しました: {e}")
     return words
 
-### 単語リストと習熟度をCSVファイルに保存する関数 ###
+# 単語リストと習熟度をCSVファイルに保存する関数
 def save_words(filename, words):
     try:
         with open(filename, mode='w', encoding='utf-8', newline='') as file:
@@ -36,7 +37,12 @@ def save_words(filename, words):
     except Exception as e:
         print(f"ファイルの保存中にエラーが発生しました: {e}")
 
-### モード選択画面を表示する関数 ###
+# カテゴリを習熟度レベルの数値に変換するヘルパー関数
+def category_to_num(category):
+    return {"全て": None, "未学習": 0, "学習中": 1, "習得済み": 2}.get(category, None)
+
+########## コア機能の関数 ##########
+# モード選択画面を表示する関数
 def start_mode_selection(root, words):
     # 既存のウィジェットをクリア
     for widget in root.winfo_children():
@@ -56,7 +62,8 @@ def start_mode_selection(root, words):
 
     selection_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-### 単語暗記モードを開始する関数 ###
+########## UI操作の関数 ##########
+# 単語暗記モードを開始する関数
 def start_learning_mode(root, words):
     # 既存のウィジェットをクリア
     for widget in root.winfo_children():
@@ -100,11 +107,12 @@ def start_learning_mode(root, words):
     # 最初の単語を表示
     display_words(words, word_label, meaning_label, "全て")
 
-############ 単語テストモードを開始する関数 ############
+# 単語テストモードを開始する関数
 def start_test_mode(root, words):
     pass
 
-### 特定のカテゴリの単語を表示する関数 ###
+########## イベントハンドラー関数 ##########
+# 特定のカテゴリの単語を表示する関数
 def display_words(words, word_label, meaning_label, category):
     global current_category, current_index
     current_category = category  # 現在のカテゴリを設定
@@ -120,18 +128,7 @@ def display_words(words, word_label, meaning_label, category):
         word_label.config(text="単語がありません")
         meaning_label.config(text="")
 
-### 特定の習熟度レベルの単語数を数える関数 ###
-def count_words(words, level):
-    if level == "全て":
-        return len(words)
-    level_num = category_to_num(level)
-    return sum(1 for info in words.values() if info['mastery_level'] == level_num)
-
-# カテゴリを習熟度レベルの数値に変換するヘルパー関数
-def category_to_num(category):
-    return {"全て": None, "未学習": 0, "学習中": 1, "習得済み": 2}.get(category, None)
-   
-### 次の単語を表示する関数 ###
+# 次の単語を表示する関数
 def display_next_word(words, word_label, meaning_label):
     global current_category, current_index
     filtered_words = [word for word, info in words.items() if category_to_num(current_category) == info['mastery_level'] or current_category == "全て"]
@@ -145,12 +142,20 @@ def display_next_word(words, word_label, meaning_label):
         word_label.config(text="単語がありません")
         meaning_label.config(text="")
 
-### アプリケーション終了時の処理 ###
+# 特定の習熟度レベルの単語数を数える関数
+def count_words(words, level):
+    if level == "全て":
+        return len(words)
+    level_num = category_to_num(level)
+    return sum(1 for info in words.values() if info['mastery_level'] == level_num)
+
+########## アプリケーション終了時の処理 ##########
 def on_close(root, filename, words):
     save_words(filename, words)
     root.destroy()
 
-#### メイン関数 ####
+
+########## メイン関数 ##########
 def main():
     root = tk.Tk()
     root.title("単語帳アプリ")
