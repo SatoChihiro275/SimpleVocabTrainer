@@ -116,14 +116,14 @@ def start_test_mode(root, words):
 
     # テストモード用のフレームを作成
     test_frame = tk.Frame(root)
-    test_frame.pack(fill=tk.BOTH, expand=True)
+    test_frame.pack(fill=tk.BOTH, expand=True, pady=(20, 0))  # 上部に余白を設定
 
     # 単語表示ラベルの設定
     word_label = tk.Label(test_frame, text="", font=("Helvetica", 24))
     word_label.pack(pady=(10, 30))
 
     # 「答えを表示」ボタンの設定
-    show_answer_button = tk.Button(test_frame, text="答えを表示", 
+    show_answer_button = tk.Button(test_frame, text="答えを表示",
                                    command=lambda: show_answer_and_mastery_options(
                                        test_frame, word_label, words, mastery_frame, show_answer_button))
     show_answer_button.pack()
@@ -133,18 +133,23 @@ def start_test_mode(root, words):
     # ここではボタンをまだパックしない
 
     for level in ["未学習", "学習中", "習得済み"]:
-        btn = tk.Button(mastery_frame, text=level, 
+        btn = tk.Button(mastery_frame, text=level,
                         command=lambda l=level: update_mastery_and_next_word(
                             word_label, words, l, mastery_frame, show_answer_button))
         btn.pack(side=tk.LEFT, padx=5)
 
-    # 「モード選択に戻る」ボタンの設定
-    back_button = tk.Button(test_frame, text="モード選択に戻る", 
-                            command=lambda: start_mode_selection(root, words))
-    back_button.pack(pady=20)
-
     # テストを開始する
     display_random_word(words, word_label)
+
+    # 「モード選択に戻る」ボタンを配置するフレーム
+    back_frame = tk.Frame(root)
+    back_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(0, 20))  # 下部に余白を設定
+
+    # 「モード選択に戻る」ボタンの設定
+    back_button = tk.Button(back_frame, text="モード選択に戻る",
+                            command=lambda: start_mode_selection(root, words))
+    back_button.pack()
+
 
 ########## イベントハンドラー関数 ##########
 # 特定のカテゴリの単語を表示する関数
