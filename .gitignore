@@ -1,0 +1,30 @@
+# バイトコンパイルされた / 最適化された / DLL ファイル
+__pycache__/
+*.py[cod]
+
+# C 拡張機能
+*.so
+
+# 配布 / パッケージング関連
+.Python
+build/
+dist/
+spec/
+*.egg-info/
+*.egg
+
+# その他
+archive/
+tests/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# ローカル設定ファイル
+.env
+
+# ログファイル
+*.log
+
+# データベースファイル
+*.db
