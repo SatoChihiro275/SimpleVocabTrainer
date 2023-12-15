@@ -15,7 +15,7 @@ spec/
 
 # その他
 archive/
-tests/
+#tests/
 
 # Jupyter Notebook
 .ipynb_checkpoints
